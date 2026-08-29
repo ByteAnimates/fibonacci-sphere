@@ -1,0 +1,33 @@
+<!doctype html>
+<!--
+  Copied into every motion repo unchanged. The piece is the page: no controls, no chrome,
+  nothing to read — open it and it is running, which is the shortest possible distance
+  between a link and the thing the link was about.
+
+  A module script and no build step, deliberately. `git clone`, open the file over any static
+  server, and it runs; the imports are relative paths a browser resolves on its own. A repo
+  whose first instruction is `npm install` is a repo most people close.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fibonacci Sphere</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0A0A0C;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
