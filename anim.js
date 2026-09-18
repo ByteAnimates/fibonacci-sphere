@@ -116,17 +116,34 @@ const DOT = 0.0085;
  *
  * ROTATION IS IN TURNS, NOT RADIANS. Every other input to a scene is a phase in [0, 1), and a
  * camera that took radians would be the one place an author has to remember to multiply by
- * TAU — which is exactly where a loop stops closing.
+ * TAU — which is exactly where a loop stops closing. `lift` is in turns for the same reason.
+ *
+ * `lift` IS THE CAMERA'S ELEVATION — how far above the equator it sits, applied after the spin.
+ * It defaults to none, and that default is load-bearing: a sphere is symmetric about the axis
+ * it turns on, so an elevation buys it nothing, and baking one into the camera would have
+ * changed a piece that was already published in order to improve a different one.
+ *
+ * A subject that is NOT symmetric needs it or it is seen edge-on. A torus lying in the plane it
+ * spins in is a line. So elevation is per-shot rather than per-series — which is the honest
+ * split: the framing is the series', the angle you look at a thing from is the thing's.
  */
-export const view = (x, y, z, p, e, r = DOT) => {
+export const view = (x, y, z, p, e, lift = 0, r = DOT) => {
   const a = wrap(p) * TAU;
   const c = Math.cos(a);
   const s = Math.sin(a);
-  const depth = x * s + z * c;
+  const spun = x * s + z * c;
+
+  // Pitch about the horizontal axis. At lift = 0 this is cos 0 = 1 and sin 0 = 0, so both lines
+  // are exact identities and a flat-camera piece is untouched to the bit.
+  const cl = Math.cos(lift * TAU);
+  const sl = Math.sin(lift * TAU);
+  const high = y * cl - spun * sl;
+  const depth = y * sl + spun * cl;
+
   const k = FOV / (FOV + depth);
   return {
     x: (x * c - z * s) * k * FIT,
-    y: y * k * FIT,
+    y: high * k * FIT,
     z: depth,
     r: r * k,
     e,
